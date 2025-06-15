@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { avalancheFuji } from "viem/chains";
 import { createMetadata, Metadata, ValidatedMetadata } from "@sherrylinks/sdk";
 import { serialize } from 'wagmi';
-import { getBeneficiarioActual } from "@/blockchain/getBeneficiarioActual";
+import { getBeneficiarioActual } from "@blockchain/getBeneficiarioActual";
 
 // GET: Devuelve la metadata para el formulario de donación
 export async function GET(req: NextRequest) {
