@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
             icon: beneficiario.avatar,
             title: "Donaciones para Migrantes",
             baseUrl: serverUrl,
-            description: beneficiario.historia,
+            description: `${beneficiario.historia}\n\nWallet del migrante: ${beneficiario.wallet}`,
             actions: [
                 {
                     type: "dynamic",
