@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
                             type: "address",
                             required: true,
                             description: "Conecta tu wallet"
-                        }
+                        },
                         {
                             name: "nip",
                             label: "Nip",
@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
                         },
                         {
                             name: "nip",
-                            label: "NIP",
+                            label: "Nip",
                             type: 'text',
                             required: true,
                             description: "Ingresa tu NIP"
