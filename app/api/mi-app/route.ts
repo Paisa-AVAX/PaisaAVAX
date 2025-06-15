@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { avalancheFuji } from "viem/chains";
 import { createMetadata, Metadata, ValidatedMetadata } from "@sherrylinks/sdk";
 import { serialize } from 'wagmi';
+import { getBeneficiarioActual } from "@/blockchain/getBeneficiarioActual";
 
 // GET: Devuelve la metadata para el formulario de donación
 export async function GET(req: NextRequest) {
@@ -10,12 +11,16 @@ export async function GET(req: NextRequest) {
         const protocol = req.headers.get('x-forwarded-proto') || 'http';
         const serverUrl = `${protocol}://${host}`;
 
+        // 1. Obtén los datos del beneficiario actual desde el contrato
+        const beneficiario = await getBeneficiarioActual();
+
+        // 2. Usa esos datos en la metadata
         const metadata: Metadata = {
             url: "https://sherry.social",
-            icon: "https://avatars.githubusercontent.com/u/117962315",
+            icon: beneficiario.avatar,
             title: "Donaciones para Migrantes",
             baseUrl: serverUrl,
-            description: "Realiza una donación en AVAX a un migrante.",
+            description: beneficiario.historia,
             actions: [
                 {
                     type: "dynamic",
@@ -30,13 +35,6 @@ export async function GET(req: NextRequest) {
                             type: "number",
                             required: true,
                             description: "Ingresa la cantidad a donar"
-                        },
-                        {
-                            name: "walletBeneficiario",
-                            label: "Wallet del Beneficiario",
-                            type: "text",
-                            required: true,
-                            description: "Dirección de wallet del beneficiario"
                         }
                     ]
                 }
@@ -73,11 +71,10 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
         const cantidad = body.cantidad;
-        const walletBeneficiario = body.walletBeneficiario;
 
-        if (!cantidad || !walletBeneficiario) {
+        if (!cantidad) {
             return NextResponse.json(
-                { error: "Missing required parameters", cantidad, walletBeneficiario },
+                { error: "Missing required parameter: cantidad" },
                 {
                     status: 400,
                     headers: {
@@ -89,6 +86,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Obtén la wallet del beneficiario actual desde el contrato
+        const beneficiario = await getBeneficiarioActual();
+        const walletBeneficiario = beneficiario.wallet;
+
+        // Lógica de la transacción
         const tx = {
             to: walletBeneficiario,
             value: BigInt(parseFloat(cantidad) * 1e18), // AVAX a wei
