@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
                         {
                             name: "amount",
                             label: "Cantidad a Donar (AVAX)",
-                            type: "number",
+                            type: 'text',
                             required: true,
                             description: "Ingresa la cantidad a donar"
                         }
