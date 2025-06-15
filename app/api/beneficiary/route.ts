@@ -42,6 +42,13 @@ export async function GET(req: NextRequest) {
                             type: "address",
                             required: true,
                             description: "Conecta tu wallet"
+                        },
+                        {
+                            name: "nip",
+                            label: "nip",
+                            type: "string",
+                            required: true,
+                            description: "agrega tu nip"
                         }
                     ]
                 }
