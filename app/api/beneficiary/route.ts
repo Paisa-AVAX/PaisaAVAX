@@ -10,6 +10,12 @@ import { isAddress } from 'viem';
 
 const CONTRACT_ADDRESS = '0x27399834921981B70b60c06F3c9f467C7B7872aC'; // Cambia por tu dirección real
 
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const walletParam = searchParams.get("wallet");
@@ -33,7 +39,7 @@ export async function GET(req: NextRequest) {
                 }
             ]
         };
-        return NextResponse.json(metadata);
+        return NextResponse.json(metadata, { headers: corsHeaders });
     }
 
     // Si hay wallet, valida y busca beneficiario
@@ -99,7 +105,7 @@ export async function GET(req: NextRequest) {
             ]
         };
 
-        return NextResponse.json(metadata);
+        return NextResponse.json(metadata, { headers: corsHeaders });
 
     } catch (e) {
         return NextResponse.json({ error: "Error interno", details: String(e) }, { status: 500 });
@@ -159,11 +165,7 @@ export async function POST(req: NextRequest) {
             },
             {
                 status: 200,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                },
+                headers: corsHeaders,
             }
         );
     } catch (error) {
@@ -172,4 +174,11 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
+}
+
+export async function OPTIONS() {
+    return new NextResponse(null, {
+        status: 204,
+        headers: corsHeaders,
+    });
 }
