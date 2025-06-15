@@ -37,7 +37,16 @@ export async function GET(req: NextRequest) {
                             description: "Ingresa la cantidad a donar"
                         }
                     ]
+                },
+                {
+                    type: "dynamic",
+                    label: "Cambiar beneficiario aleatoriamente",
+                    description: "Cambia el beneficiario actual por uno aleatorio",
+                    chains: { source: "fuji" },
+                    path: "/api/mi-app/refresh",
+                    params: [] // No necesita parámetros
                 }
+
             ]
         };
 
