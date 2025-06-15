@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
 
     // Si NO hay wallet, muestra landing de la fundación
     if (!walletParam) {
-        const metadata: Metadata = {
+        const metadata = {
             url: "https://sherry.social",
-            icon: "https://kubsycsxqsuoevqckjkm.supabase.co/storage/v1/object/public/PCP//paisa.jpeg",
+            icon: "URL_DE_LA_FUNDACION",
             title: "Fundación Breaking Borders",
             baseUrl: "https://breaking-borders.vercel.app",
             description: "Ayudamos a migrantes a recibir donaciones y retirar fondos de forma segura.",
@@ -39,16 +39,9 @@ export async function GET(req: NextRequest) {
                         {
                             name: "wallet",
                             label: "Wallet",
-                            type: "address",
+                            type: "wallet",
                             required: true,
                             description: "Conecta tu wallet"
-                        },
-                        {
-                            name: "nip",
-                            label: "nip",
-                            type: "string",
-                            required: true,
-                            description: "agrega tu nip"
                         }
                     ]
                 }
@@ -59,7 +52,7 @@ export async function GET(req: NextRequest) {
 
     // Si hay wallet, valida y busca beneficiario
     if (!isAddress(walletParam)) {
-        return NextResponse.json({ error: "Wallet inválida" }, { status: 400 });
+        return NextResponse.json({ error: "Wallet inválida" }, { status: 400, headers: corsHeaders });
     }
     const wallet = walletParam as `0x${string}`;
 
@@ -72,7 +65,15 @@ export async function GET(req: NextRequest) {
         });
 
         if (!beneficiario) {
-            return NextResponse.json({ error: "No eres beneficiario" }, { status: 403 });
+            // Si la wallet no es beneficiario, muestra mensaje claro
+            return NextResponse.json({
+                url: "https://sherry.social",
+                icon: "URL_DE_LA_FUNDACION",
+                title: "No eres beneficiario",
+                baseUrl: "https://breaking-borders.vercel.app",
+                description: "Tu wallet no está registrada como beneficiario. Si eres migrante, contacta a la fundación.",
+                actions: []
+            }, { headers: corsHeaders });
         }
 
         // Desestructura y arma la metadata personalizada
@@ -87,7 +88,7 @@ export async function GET(req: NextRequest) {
             saldo
         ] = beneficiario;
 
-        const metadata: Metadata = {
+        const metadata = {
             url: "https://sherry.social",
             icon: avatar,
             title: "Panel del Beneficiario",
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(metadata, { headers: corsHeaders });
 
     } catch (e) {
-        return NextResponse.json({ error: "Error interno", details: String(e) }, { status: 500 });
+        return NextResponse.json({ error: "Error interno", details: String(e) }, { status: 500, headers: corsHeaders });
     }
 }
 // POST: Prepara la transacción de retiro
