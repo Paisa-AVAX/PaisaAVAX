@@ -70,11 +70,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const cantidad = body.cantidad;
+        const amount = body.amount;
 
-        if (!cantidad) {
+        if (!amount) {
             return NextResponse.json(
-                { error: "Missing required parameter: cantidad" },
+                { error: "Missing required parameter: amount" },
                 {
                     status: 400,
                     headers: {
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
         // Lógica de la transacción
         const tx = {
             to: walletBeneficiario,
-            value: BigInt(parseFloat(cantidad) * 1e18), // AVAX a wei
+            value: BigInt(parseFloat(amount) * 1e18), // AVAX a wei
             chainId: avalancheFuji.id,
         };
 
