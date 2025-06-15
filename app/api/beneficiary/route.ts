@@ -10,26 +10,39 @@ import { isAddress } from 'viem';
 
 const CONTRACT_ADDRESS = '0x27399834921981B70b60c06F3c9f467C7B7872aC'; // Cambia por tu dirección real
 
-
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const walletParam = searchParams.get("wallet");
 
-    // 1. Valida que el parámetro existe
+    // Si NO hay wallet, muestra landing de la fundación
     if (!walletParam) {
-        return NextResponse.json({ error: "Wallet requerida" }, { status: 400 });
+        const metadata: Metadata = {
+            url: "https://sherry.social",
+            icon: "https://kubsycsxqsuoevqckjkm.supabase.co/storage/v1/object/public/PCP//paisa.jpeg",
+            title: "Fundación Breaking Borders",
+            baseUrl: "https://breaking-borders.vercel.app",
+            description: "Ayudamos a migrantes a recibir donaciones y retirar fondos de forma segura.",
+            actions: [
+                {
+                    type: "dynamic",
+                    label: "Conectar Wallet",
+                    description: "Conecta tu wallet para continuar",
+                    chains: { source: "fuji" },
+                    path: "/api/beneficiary",
+                    params: [] // No params aún
+                }
+            ]
+        };
+        return NextResponse.json(metadata);
     }
 
-    // 2. Valida que sea una dirección Ethereum válida
+    // Si hay wallet, valida y busca beneficiario
     if (!isAddress(walletParam)) {
         return NextResponse.json({ error: "Wallet inválida" }, { status: 400 });
     }
-
-    // 3. Haz el type assertion
     const wallet = walletParam as `0x${string}`;
 
     try {
-        // 4. Llama a la función del contrato
         const beneficiario = await publicClient.readContract({
             address: CONTRACT_ADDRESS,
             abi,
@@ -41,7 +54,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "No eres beneficiario" }, { status: 403 });
         }
 
-        // Desestructura los datos
+        // Desestructura y arma la metadata personalizada
         const [
             walletAddr,
             nombre,
@@ -53,12 +66,11 @@ export async function GET(req: NextRequest) {
             saldo
         ] = beneficiario;
 
-        // Arma la metadata
         const metadata: Metadata = {
             url: "https://sherry.social",
             icon: avatar,
             title: "Panel del Beneficiario",
-            baseUrl: "https://TU_DOMINIO", // o usa host/protocol como antes
+            baseUrl: "https://breaking-borders.vercel.app",
             description: `Folio: ${folio}\nSaldo: ${Number(saldo) / 1e18} AVAX\n\n${historia}`,
             actions: [
                 {
@@ -87,15 +99,8 @@ export async function GET(req: NextRequest) {
             ]
         };
 
-        const validated: ValidatedMetadata = createMetadata(metadata);
+        return NextResponse.json(metadata);
 
-        return NextResponse.json(validated, {
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            },
-        });
     } catch (e) {
         return NextResponse.json({ error: "Error interno", details: String(e) }, { status: 500 });
     }
