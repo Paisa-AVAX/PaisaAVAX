@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
                         {
                             name: "wallet",
                             label: "Wallet",
-                            type: "wallet",
+                            type: "address",
                             required: true,
                             description: "Conecta tu wallet"
                         }
