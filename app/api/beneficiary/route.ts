@@ -43,6 +43,13 @@ export async function GET(req: NextRequest) {
                             required: true,
                             description: "Conecta tu wallet"
                         }
+                        {
+                            name: "nip",
+                            label: "Nip",
+                            type: "string",
+                            required: true,
+                            description: "agrega tu nip"
+                        }
                     ]
                 }
             ]
