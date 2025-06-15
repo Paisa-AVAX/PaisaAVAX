@@ -126,11 +126,12 @@ export async function POST(req: NextRequest) {
         };
 
         const serialized = serialize(tx);
-
+// mensaje de agradecimiento
         return NextResponse.json(
             {
                 serializedTransaction: serialized,
                 chainId: avalancheFuji.name,
+                successMessage: `¡Gracias por donar! Has ayudado a un migrante`
             },
             {
                 status: 200,

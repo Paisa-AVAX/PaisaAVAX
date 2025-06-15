@@ -63,7 +63,8 @@ export async function POST(req: NextRequest) {
             {
                 serializedTransaction: serialized,
                 chainId: avalancheFuji.name,
-                nuevoIndex
+                nuevoIndex,
+                refresh:true
             },
             {
                 status: 200,
