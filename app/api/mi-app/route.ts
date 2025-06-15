@@ -70,11 +70,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const amount = body.amount;
+        const amount = parseFloat(body.amount);
 
-        if (!amount) {
+        if (isNaN(amount) || amount <= 0) {
             return NextResponse.json(
-                { error: "Missing required parameter: amount" },
+                { error: "Cantidad inválida" },
                 {
                     status: 400,
                     headers: {
@@ -86,14 +86,12 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Obtén la wallet del beneficiario actual desde el contrato
         const beneficiario = await getBeneficiarioActual();
         const walletBeneficiario = beneficiario.wallet;
 
-        // Lógica de la transacción
         const tx = {
             to: walletBeneficiario,
-            value: BigInt(parseFloat(amount) * 1e18), // AVAX a wei
+            value: BigInt(Math.floor(amount * 1e18)), // AVAX a wei, asegurando entero
             chainId: avalancheFuji.id,
         };
 
