@@ -238,3 +238,79 @@ export async function OPTIONS(request: NextRequest) {
         },
     });
 }
+
+export async function POST(req: NextRequest) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const action = searchParams.get("action");
+
+        if (action === "donar") {
+            // Aquí extraes los parámetros enviados por Sherry
+            const cantidad = searchParams.get("cantidad");
+            const walletBeneficiario = searchParams.get("walletBeneficiario");
+
+            if (!cantidad || !walletBeneficiario) {
+                return NextResponse.json(
+                    { error: "Missing required parameters" },
+                    {
+                        status: 400,
+                        headers: {
+                            "Access-Control-Allow-Origin": "*",
+                            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                            "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
+                        },
+                    }
+                );
+            }
+
+            // Aquí iría la lógica para crear la transacción (ejemplo simple)
+            const tx = {
+                to: walletBeneficiario,
+                value: BigInt(parseFloat(cantidad) * 1e18), // Convertir AVAX a wei
+                chainId: avalancheFuji.id,
+            };
+
+            const serialized = serialize(tx);
+
+            return NextResponse.json(
+                {
+                    serializedTransaction: serialized,
+                    chainId: avalancheFuji.name,
+                },
+                {
+                    headers: {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
+                    },
+                }
+            );
+        }
+
+        // Si la acción no es reconocida
+        return NextResponse.json(
+            { error: "Invalid action" },
+            {
+                status: 400,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
+                },
+            }
+        );
+    } catch (error) {
+        console.error("Error in POST request:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            {
+                status: 500,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
+                },
+            }
+        );
+    }
+}
