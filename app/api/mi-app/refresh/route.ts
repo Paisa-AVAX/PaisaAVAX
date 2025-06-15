@@ -26,7 +26,14 @@ export async function POST(req: NextRequest) {
         if (total <= BigInt(1)){
             return NextResponse.json(
                 { error: "Debe haber al menos 2 beneficiarios para refrescar." },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                    },
+                }
             );
         }
 
@@ -58,13 +65,39 @@ export async function POST(req: NextRequest) {
                 chainId: avalancheFuji.name,
                 nuevoIndex
             },
-            { status: 200 }
+            {
+                status: 200,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                },
+            }
         );
     } catch (error) {
         console.error("Error en refresh:", error);
         return NextResponse.json(
             { error: "Error interno", details: String(error) },
-            { status: 500 }
+            {
+                status: 500,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                },
+            }
         );
     }
+}
+
+// Handler para preflight CORS
+export async function OPTIONS(request: NextRequest) {
+    return new NextResponse(null, {
+        status: 204,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+    });
 }
