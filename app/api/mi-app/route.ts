@@ -66,12 +66,28 @@ export async function GET(req: NextRequest) {
     }
 }
 
-// POST: Procesa la donación y responde con la transacción serializada
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
-        const amount = parseFloat(body.amount);
+        let body: any;
 
+        // Intenta leer el body como JSON, si falla responde con error 400
+        try {
+            body = await req.json();
+        } catch (e) {
+            return NextResponse.json(
+                { error: "El body debe ser un JSON válido" },
+                {
+                    status: 400,
+                    headers: {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                    },
+                }
+            );
+        }
+
+        const amount = parseFloat(body.amount);
         if (isNaN(amount) || amount <= 0) {
             return NextResponse.json(
                 { error: "Cantidad inválida" },
@@ -86,9 +102,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Obtén la wallet del beneficiario actual desde el contrato
         const beneficiario = await getBeneficiarioActual();
         const walletBeneficiario = beneficiario.wallet;
 
+        // Lógica de la transacción
         const tx = {
             to: walletBeneficiario,
             value: BigInt(Math.floor(amount * 1e18)), // AVAX a wei, asegurando entero
@@ -126,7 +144,6 @@ export async function POST(req: NextRequest) {
         );
     }
 }
-
 // OPTIONS: CORS preflight
 export async function OPTIONS(request: NextRequest) {
     return new NextResponse(null, {
