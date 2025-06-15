@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
                     path: "/api/mi-app",
                     params: [
                         {
-                            name: "cantidad",
+                            name: "amount",
                             label: "Cantidad a Donar (AVAX)",
                             type: "number",
                             required: true,
