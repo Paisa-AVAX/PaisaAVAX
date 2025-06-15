@@ -35,7 +35,15 @@ export async function GET(req: NextRequest) {
                     description: "Conecta tu wallet para continuar",
                     chains: { source: "fuji" },
                     path: "/api/beneficiary",
-                    params: [] // No params aún
+                    params: [
+                        {
+                            name: "wallet",
+                            label: "Wallet",
+                            type: "address",
+                            required: true,
+                            description: "Conecta tu wallet"
+                        }
+                    ]
                 }
             ]
         };
