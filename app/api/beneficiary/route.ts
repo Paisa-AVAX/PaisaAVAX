@@ -6,33 +6,60 @@ import { abi } from "@blockchain/abi";
 import { publicClient } from "@blockchain/client";
 import { getBeneficiarioActual } from "@blockchain/getBeneficiarioActual";
 import { serialize } from 'wagmi';
+import { isAddress } from 'viem';
 
-const CONTRACT_ADDRESS = '0x0c19e55972D233B16C090f8b4DB91c28b74A62d3'; // Cambia por tu dirección real
+const CONTRACT_ADDRESS = '0x27399834921981B70b60c06F3c9f467C7B7872aC'; // Cambia por tu dirección real
 
-// GET: Metadata para Sherry
+
 export async function GET(req: NextRequest) {
-    try {
-        const host = req.headers.get('host') || 'localhost:3000';
-        const protocol = req.headers.get('x-forwarded-proto') || 'http';
-        const serverUrl = `${protocol}://${host}`;
+    const { searchParams } = new URL(req.url);
+    const walletParam = searchParams.get("wallet");
 
-        // 1. Obtén los datos del beneficiario actual
-        const beneficiario = await getBeneficiarioActual();
-        // 2. Obtén el historial de movimientos
-        const movimientos = await publicClient.readContract({
+    // 1. Valida que el parámetro existe
+    if (!walletParam) {
+        return NextResponse.json({ error: "Wallet requerida" }, { status: 400 });
+    }
+
+    // 2. Valida que sea una dirección Ethereum válida
+    if (!isAddress(walletParam)) {
+        return NextResponse.json({ error: "Wallet inválida" }, { status: 400 });
+    }
+
+    // 3. Haz el type assertion
+    const wallet = walletParam as `0x${string}`;
+
+    try {
+        // 4. Llama a la función del contrato
+        const beneficiario = await publicClient.readContract({
             address: CONTRACT_ADDRESS,
             abi,
-            functionName: 'obtenerHistorial',
-            args: [beneficiario.wallet],
+            functionName: 'getBeneficiarioPorWallet',
+            args: [wallet],
         });
 
-        // 3. Prepara la metadata para Sherry
+        if (!beneficiario) {
+            return NextResponse.json({ error: "No eres beneficiario" }, { status: 403 });
+        }
+
+        // Desestructura los datos
+        const [
+            walletAddr,
+            nombre,
+            edad,
+            nacionalidad,
+            historia,
+            avatar,
+            folio,
+            saldo
+        ] = beneficiario;
+
+        // Arma la metadata
         const metadata: Metadata = {
             url: "https://sherry.social",
-            icon: beneficiario.avatar,
+            icon: avatar,
             title: "Panel del Beneficiario",
-            baseUrl: serverUrl,
-            description: `Folio: ${beneficiario.folio}\nSaldo: ${beneficiario.saldo} AVAX\n\n${beneficiario.historia}`,
+            baseUrl: "https://TU_DOMINIO", // o usa host/protocol como antes
+            description: `Folio: ${folio}\nSaldo: ${Number(saldo) / 1e18} AVAX\n\n${historia}`,
             actions: [
                 {
                     type: "dynamic",
@@ -70,20 +97,9 @@ export async function GET(req: NextRequest) {
             },
         });
     } catch (e) {
-        return NextResponse.json(
-            { error: "Failed to create metadata" },
-            {
-                status: 500,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                },
-            }
-        );
+        return NextResponse.json({ error: "Error interno", details: String(e) }, { status: 500 });
     }
 }
-
 // POST: Prepara la transacción de retiro
 export async function POST(req: NextRequest) {
     let amount: string | null = null;

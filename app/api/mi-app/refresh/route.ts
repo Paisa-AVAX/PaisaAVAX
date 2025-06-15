@@ -5,7 +5,7 @@ import { avalancheFuji } from "viem/chains";
 import { abi } from "@blockchain/abi";
 import { publicClient } from "@blockchain/client";
 
-const CONTRACT_ADDRESS = '0x0c19e55972D233B16C090f8b4DB91c28b74A62d3'; // tu contrato
+const CONTRACT_ADDRESS = '0x27399834921981B70b60c06F3c9f467C7B7872aC'; // tu contrato
 
 export async function POST(req: NextRequest) {
     try {
