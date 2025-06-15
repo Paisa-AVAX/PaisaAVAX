@@ -66,42 +66,45 @@ export async function GET(req: NextRequest) {
     }
 }
 
+
+
 export async function POST(req: NextRequest) {
+    let amount: string | null = null;
+    let body: any = null;
+
+    // 1. Intenta leer del body
     try {
-        let body: any;
-
-        // Intenta leer el body como JSON, si falla responde con error 400
-        try {
-            body = await req.json();
-        } catch (e) {
-            return NextResponse.json(
-                { error: "El body debe ser un JSON válido" },
-                {
-                    status: 400,
-                    headers: {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                    },
-                }
-            );
+        body = await req.json();
+        if (body && body.amount) {
+            amount = body.amount;
         }
+    } catch (e) {
+        // Si falla, ignora (puede que no haya body)
+    }
 
-        const amount = parseFloat(body.amount);
-        if (isNaN(amount) || amount <= 0) {
-            return NextResponse.json(
-                { error: "Cantidad inválida" },
-                {
-                    status: 400,
-                    headers: {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                    },
-                }
-            );
-        }
+    // 2. Si no hay amount, intenta leer de query params
+    if (!amount) {
+        const { searchParams } = new URL(req.url);
+        amount = searchParams.get("amount");
+    }
 
+    // 3. Valida y sigue igual
+    const parsedAmount = parseFloat(amount || "");
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        return NextResponse.json(
+            { error: "Cantidad inválida" },
+            {
+                status: 400,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                },
+            }
+        );
+    }
+
+    try {
         // Obtén la wallet del beneficiario actual desde el contrato
         const beneficiario = await getBeneficiarioActual();
         const walletBeneficiario = beneficiario.wallet;
@@ -109,7 +112,7 @@ export async function POST(req: NextRequest) {
         // Lógica de la transacción
         const tx = {
             to: walletBeneficiario,
-            value: BigInt(Math.floor(amount * 1e18)), // AVAX a wei, asegurando entero
+            value: BigInt(Math.floor(parsedAmount * 1e18)), // AVAX a wei
             chainId: avalancheFuji.id,
         };
 
