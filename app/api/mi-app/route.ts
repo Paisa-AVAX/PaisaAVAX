@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
                         label: "Iniciar aplicación",
                         description: "Comienza a usar la app",
                         chains: { source: "fuji" },
-                        path: `/api/mi-app?step=2`,
+                        path: `/api/mi-app?donations=2`,
                         params: []
                     }
                 ]
