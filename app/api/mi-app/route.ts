@@ -245,9 +245,10 @@ export async function POST(req: NextRequest) {
         const action = searchParams.get("action");
 
         if (action === "donar") {
-            // Aquí extraes los parámetros enviados por Sherry
-            const cantidad = searchParams.get("cantidad");
-            const walletBeneficiario = searchParams.get("walletBeneficiario");
+            // Leer el body como JSON
+            const body = await req.json();
+            const cantidad = body.cantidad;
+            const walletBeneficiario = body.walletBeneficiario;
 
             if (!cantidad || !walletBeneficiario) {
                 return NextResponse.json(
@@ -263,7 +264,7 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            // Aquí iría la lógica para crear la transacción (ejemplo simple)
+            // Lógica de la transacción
             const tx = {
                 to: walletBeneficiario,
                 value: BigInt(parseFloat(cantidad) * 1e18), // Convertir AVAX a wei
