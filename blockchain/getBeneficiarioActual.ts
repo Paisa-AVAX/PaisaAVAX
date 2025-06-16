@@ -1,7 +1,7 @@
 import { publicClient } from './client';
 import { abi } from "./abi";
 
-const CONTRACT_ADDRESS = '0x0c19e55972D233B16C090f8b4DB91c28b74A62d3';
+const CONTRACT_ADDRESS = '0x27399834921981B70b60c06F3c9f467C7B7872aC';
 
 export async function getBeneficiarioActual() {
   const [
