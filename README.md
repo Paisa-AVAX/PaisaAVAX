@@ -1,9 +1,28 @@
-# 🟣 PAISA — Donations for Migrants
+<p align="center">
+  <img src="https://kubsycsxqsuoevqckjkm.supabase.co/storage/v1/object/public/PCP//paisaLogo.jpeg" alt="PAISA Logo" width="200"/>
+</p>
+
+# PAISA — Donations for Migrants
 
 **Paisa** is a Web3 mini-application that enables **direct donations to vulnerable migrants**, without banks or bureaucracy. Built on **Sherry SDK**, this app allows anyone in the world to contribute AVAX in a simple, transparent, and secure way.
 
----
+## 🎥 Demo del Proyecto
 
+<a href="https://vimeo.com/1093602068" target="_blank">
+  <img src="https://kubsycsxqsuoevqckjkm.supabase.co/storage/v1/object/public/PCP//paisaLogo.jpeg" alt="Watch the video" width="400"/>
+</a>
+
+
+
+---
+### 🧠 App Model (Architecture Diagram)
+
+You can explore our system model visually in Excalidraw:
+
+🔗 [View Application Diagram](https://excalidraw.com/#json=87f_R8taPuRXZ9b4PyCbM,k5KEbUHPl-7oF9-07ptAtA)
+🔗 [Project Presentation](https://kubsycsxqsuoevqckjkm.supabase.co/storage/v1/object/public/PCP//Pitch%20Deck%20-%20PAISA.pdf)
+
+---
 ## 🧩 Key Features
 
 - 🔄 **Random rotation of the active beneficiary** (automatically updates to support different people)
@@ -84,22 +103,12 @@ This app can be integrated directly at: [https://app.sherry.social/home](https:/
 ### 🧾 Story
 > He fled Honduras after losing his carpentry shop to gang extortion. His eldest son was murdered, and now he dreams of rebuilding a safe life for his family.
 
-### 💸 Sherry Interface Integration
-![sherry app screen](https://your-screenshot-url.png)
-
-🎥 Watch demo video [here](https://link-to-your-demo-video.com)
-
 ---
 
 ## 🧠 Smart Contract Deployment
 
-```solidity
-function donate() external payable {
-    Beneficiary storage b = beneficiaries[currentBeneficiary];
-    b.balance += msg.value;
-    transactions[b.wallet].push(msg.value);
-    emit DonationReceived(b.wallet, msg.value);
-}
+```
+https://testnet.snowtrace.io/address/0x0c19e55972D233B16C090f8b4DB91c28b74A62d3
 ```
 
 ---
