@@ -18,30 +18,31 @@ export async function GET(req: NextRequest) {
         const metadata: Metadata = {
             url: "https://sherry.social",
             icon: beneficiario.avatar,
-            title: "Donaciones para Migrantes",
+            title: "Donations For Immigrants",
             baseUrl: serverUrl,
-            description: `${beneficiario.historia}\n\nWallet del migrante: ${beneficiario.wallet}`,
+            description: `${beneficiario.historia}\n\n\n 
+            Immigrant Wallet: ${beneficiario.wallet}`,
             actions: [
                 {
                     type: "dynamic",
-                    label: "Donar",
-                    description: "Realiza tu donación",
+                    label: "Donation",
+                    description: "Make your donation",
                     chains: { source: "fuji" },
                     path: "/api/mi-app",
                     params: [
                         {
                             name: "amount",
-                            label: "Cantidad a Donar (AVAX)",
+                            label: "Amout (AVAX)",
                             type: 'text',
                             required: true,
-                            description: "Ingresa la cantidad a donar"
+                            description: "Amount AVAX"
                         }
                     ]
                 },
                 {
                     type: "dynamic",
-                    label: "Cambiar beneficiario aleatoriamente",
-                    description: "Cambia el beneficiario actual por uno aleatorio",
+                    label: "Change beneficiary",
+                    description: "Change beneficiary",
                     chains: { source: "fuji" },
                     path: "/api/mi-app/refresh",
                     params: [] // No necesita parámetros
