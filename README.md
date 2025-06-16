@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🟣 PAISA — Donations for Migrants
 
-## Getting Started
+**Paisa** is a Web3 mini-application that enables **direct donations to vulnerable migrants**, without banks or bureaucracy. Built on **Sherry SDK**, this app allows anyone in the world to contribute AVAX in a simple, transparent, and secure way.
 
-First, run the development server:
+---
+
+## 🧩 Key Features
+
+- 🔄 **Random rotation of the active beneficiary** (automatically updates to support different people)
+- 🎯 **AVAX donations** sent directly to the current beneficiary's wallet
+- 📡 Fully on-chain: beneficiary history, balance, and transactions
+
+---
+
+## 🔧 Tech Stack
+
+- Smart contracts in Solidity
+- Sherry SDK (Dynamic Actions)
+- Next.js 14 + App Router
+- wagmi + viem (for transaction serialization)
+- Supabase (image storage)
+- Blockchain: Avalanche Fuji (testnet)
+
+---
+
+## 🚀 Local Setup Instructions
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Paisa-AVAX/PaisaAVAX.git
+cd app/api/mi-app
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open your browser at: `http://localhost:3000/api/my-app`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔁 Sherry Integration
 
-## Learn More
+This app can be integrated directly at: [https://app.sherry.social/home](https://app.sherry.social/home)
 
-To learn more about Next.js, take a look at the following resources:
+### 📥 Form Metadata (GET endpoint):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Retrieves the current beneficiary's data from the smart contract.
+- Displays their story, image, and wallet.
+- Generates two dynamic actions:
+  - Donate a specific amount of AVAX
+  - Randomly change the current beneficiary
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🔁 Dynamic Action `/api/mi-app/refresh`:
 
-## Deploy on Vercel
+```ts
+// Randomly change the currently active beneficiary
+// Returns the serialized transaction to be executed onchain
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🎯 Dynamic Action `/api/mi-app`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```ts
+// Accepts 'amount' via query or body
+// Returns the serialized transaction to donate to the current beneficiary
+```
+
+---
+
+## 📸 App Preview
+
+### 🧑‍🎓 Current Beneficiary
+<img src="https://kubsycsxqsuoevqckjkm.supabase.co/storage/v1/object/public/PCP//miguelA.png" alt="avatar" width="150"/>
+
+### 🧾 Story
+> He fled Honduras after losing his carpentry shop to gang extortion. His eldest son was murdered, and now he dreams of rebuilding a safe life for his family.
+
+### 💸 Sherry Interface Integration
+![sherry app screen](https://your-screenshot-url.png)
+
+🎥 Watch demo video [here](https://link-to-your-demo-video.com)
+
+---
+
+## 🧠 Smart Contract Deployment
+
+```solidity
+function donate() external payable {
+    Beneficiary storage b = beneficiaries[currentBeneficiary];
+    b.balance += msg.value;
+    transactions[b.wallet].push(msg.value);
+    emit DonationReceived(b.wallet, msg.value);
+}
+```
+
+---
+
+## 💬 Contributions
+
+Want to improve or expand this app with support for stablecoins, Lens integration, or card payments? PRs and new ideas are welcome!
+
+---
+
+## 🤝 Credits
+
+Developed by:
+- vr4ux23  
+- Dany Kubs  
+- zekibestia  
+- Mich  
+- Jorge E  
+
+Project submitted to the **Triggers Not Apps Hackathon** by Sherry + Avalanche.
+
+---
+
